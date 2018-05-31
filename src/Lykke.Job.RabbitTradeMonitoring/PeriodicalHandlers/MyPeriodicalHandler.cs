@@ -27,7 +27,7 @@ namespace Lykke.Job.RabbitTradeMonitoring.PeriodicalHandlers
         public override async Task Execute()
         {
             var pairstat = _messageStatistic.GetInstrumentStatAndReset();
-            var clientstat = _messageStatistic.GetInstrumentStatAndReset();
+            var clientstat = _messageStatistic.GetClientStatAndReset();
 
             foreach (var pair in pairstat)
             {
