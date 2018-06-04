@@ -36,7 +36,7 @@ namespace Lykke.Job.RabbitTradeMonitoring.RabbitSubscribers
             var settings = RabbitMqSubscriptionSettings
                 .CreateForSubscriber(_connectionString, _exchangeName, "rabbittrademonitoring");
             settings.ExchangeName = _exchangeName;
-            settings.QueueName = $"_exchangeName.rabbit_trade_monitoring";
+            settings.QueueName = $"{_exchangeName}.rabbit-trade-monitoring";
             settings.IsDurable = false;
 
             _subscriber = new RabbitMqSubscriber<LimitOrderMessage>(settings,
