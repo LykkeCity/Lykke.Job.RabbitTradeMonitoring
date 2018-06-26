@@ -1,7 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using Lykke.MatchingEngine.Connector.Messages;
 using Lykke.MatchingEngine.Connector.Models;
+using Lykke.MatchingEngine.Connector.Models.Common;
+using Lykke.MatchingEngine.Connector.Models.RabbitMq;
 
 namespace Lykke.Job.RabbitTradeMonitoring.Services
 {
@@ -11,7 +12,7 @@ namespace Lykke.Job.RabbitTradeMonitoring.Services
         private Dictionary<string, Stat> _instrumentIndex = new Dictionary<string, Stat>();
         private Dictionary<string, Stat> _clientIndex = new Dictionary<string, Stat>();
 
-        public void HandleMessage(LimitOrderMessage message)
+        public void HandleMessage(LimitOrders message)
         {
             lock (_gate)
             {
@@ -30,7 +31,7 @@ namespace Lykke.Job.RabbitTradeMonitoring.Services
             }
         }
 
-        private static void UpdateStat(Stat stat, LimitOrderMessage.LimitOrder order)
+        private static void UpdateStat(Stat stat, LimitOrderWithTrades order)
         {
             stat.CountOrderMessage++;
             stat.AddOrderStatus(order.Order.Status);

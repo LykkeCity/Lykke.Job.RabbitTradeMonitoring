@@ -3,9 +3,8 @@ using System.Threading.Tasks;
 using Autofac;
 using Common;
 using Common.Log;
-using Lykke.Job.RabbitTradeMonitoring.Core.Domain;
 using Lykke.Job.RabbitTradeMonitoring.Services;
-using Lykke.MatchingEngine.Connector.Messages;
+using Lykke.MatchingEngine.Connector.Models.RabbitMq;
 using Lykke.RabbitMqBroker;
 using Lykke.RabbitMqBroker.Subscriber;
 
@@ -17,7 +16,7 @@ namespace Lykke.Job.RabbitTradeMonitoring.RabbitSubscribers
         private readonly MessageStatistic _messageStatistic;
         private readonly string _connectionString;
         private readonly string _exchangeName;
-        private RabbitMqSubscriber<LimitOrderMessage> _subscriber;
+        private RabbitMqSubscriber<LimitOrders> _subscriber;
 
         public MyRabbitSubscriber(
             ILog log,
@@ -39,11 +38,11 @@ namespace Lykke.Job.RabbitTradeMonitoring.RabbitSubscribers
             settings.QueueName = $"{_exchangeName}.rabbit-trade-monitoring";
             settings.IsDurable = false;
 
-            _subscriber = new RabbitMqSubscriber<LimitOrderMessage>(settings,
+            _subscriber = new RabbitMqSubscriber<LimitOrders>(settings,
                     new ResilientErrorHandlingStrategy(_log, settings,
                         retryTimeout: TimeSpan.FromSeconds(10),
                         next: new DeadQueueErrorHandlingStrategy(_log, settings)))
-                .SetMessageDeserializer(new JsonMessageDeserializer<LimitOrderMessage>())
+                .SetMessageDeserializer(new JsonMessageDeserializer<LimitOrders>())
                 .Subscribe(ProcessMessageAsync)
                 .CreateDefaultBinding()
                 .SetLogger(_log)
@@ -51,7 +50,7 @@ namespace Lykke.Job.RabbitTradeMonitoring.RabbitSubscribers
                 .Start();
         }
 
-        private async Task ProcessMessageAsync(LimitOrderMessage arg)
+        private async Task ProcessMessageAsync(LimitOrders arg)
         {
             _messageStatistic.HandleMessage(arg);
 
